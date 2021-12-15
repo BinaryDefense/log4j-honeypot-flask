@@ -69,8 +69,9 @@ login_form = """<html>
 def homepage():
     for header in request.headers:
         print(header)
-        if "${" in header:
-            reportHit(request)
+        for field in header:
+            if "${" in field:
+                reportHit(request)
     if request.method == 'POST':
         for fieldname, value in request.form.items():
             print(value)
