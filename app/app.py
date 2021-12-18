@@ -65,8 +65,9 @@ login_form = """<html>
 </form>
 </body></html>"""
 
-@app.route("/", methods=['POST','GET','PUT','DELETE'])
-def homepage():
+@app.route('/websso/SAML2/SSO/<path:hostname>') # vCenter websso login path
+@app.route("/", methods=['POST','GET','HEAD','PUT','DELETE'])
+def homepage(hostname="NA"):
     for header in request.headers:
         print(header)
         for field in header:
