@@ -47,7 +47,17 @@ def getPayload(request):
                 return 0
             else:
                 result_status, result_data = con.result(msgid, 0)
-                pprint.pprint(result_data[0][1])
+                if result_data[0][1]['javaCodeBase']:
+                    r = requests.get(result_data[0][1]['javaCodeBase'].strip('/') +
+                                     '/' + result_data[0][1]['javaFactory'] +
+                                     '.class',
+                                     stream=True
+                    )
+                    if r.status_code == 200:
+                        with open('payloads/' + str(connect['ip'][0]) + '_' + result_data[0][1]['javaFactory'] + '.class', 'wb') as f:
+                            for chunk in r:
+                                f.write(chunk)
+                            f.close()
 
 
 
