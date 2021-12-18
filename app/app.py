@@ -55,12 +55,12 @@ def homepage():
             if re.search(regex, str(value)):
                 payload = getPayload(value)
                 exploited = True
-        if exploited:
+        if 'exploited' in locals():
             reportHit(request)
         return (
             "<html><head><title>Login Failed</title></head><body><h1>Login Failed</h1><br/><a href='/'>Try again</a></body></html>")
     else:
-        if exploited:
+        if 'exploited' in locals():
             reportHit(request)
         return render_template('index.html')
 
