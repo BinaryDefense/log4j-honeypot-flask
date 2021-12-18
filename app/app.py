@@ -20,9 +20,12 @@ def read_conf():
 
 
 def getPayload(request):
-    regex = re.compile(r'/(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|).*})/gm')
+    regex = re.compile(
+        r'/(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|).*})/gm'
+    )
     m = re.match(regex, request)
     pprint.pprint(m.group(0))
+
 
 def reportHit(request):
     return 0
@@ -53,5 +56,4 @@ def homepage():
 
 if __name__ == '__main__':
     config = read_conf()
-    app.run(debug=False, host=config['DEFAULT']['ip'], port=int(config['DEFAULT']['port']))
-
+    app.run(debug=True, host=config['DEFAULT']['ip'], port=int(config['DEFAULT']['port']))
