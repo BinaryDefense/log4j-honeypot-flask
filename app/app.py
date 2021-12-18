@@ -33,6 +33,7 @@ def getPayload(request):
         pprint.pprint(connect)
 
         try:
+            print("ldap://" + connect['ip'][0] + connect['port'][0].replace('/', ''))
             con = ldap.initialize("ldap://" + connect['ip'][0] + connect['port'][0].replace('/', ''), bytes_mode=False)
         except:
             return 0
