@@ -42,26 +42,30 @@ def getPayload(request):
             con.protocol_version = ldap.VERSION3
             con.set_option(ldap.OPT_REFERRALS, 0)
             con.set_option(ldap.OPT_NETWORK_TIMEOUT, 5.0)
-            con.simple_bind_s()
-            search_scope = ldap.SCOPE_SUBTREE
             try:
-                msgid = con.search(connect['path'][0].strip("/"), search_scope)
+                con.simple_bind_s()
             except:
                 return 0
             else:
-                result_status, result_data = con.result(msgid, 0)
-                if result_data[0][1]['javaCodeBase']:
-                    r = requests.get(result_data[0][1]['javaCodeBase'][0].decode('ascii').strip('/') + '/' +
-                                     result_data[0][1]['javaFactory'][0].decode('ascii') + '.class',
-                                     stream=True
-                                     )
-                    if r.status_code == 200:
-                        with open(
-                                'payloads/' + str(connect['ip'][0]) + '_' + result_data[0][1]['javaFactory'][0].decode(
-                                    'ascii') + '.class', 'wb') as f:
-                            for chunk in r:
-                                f.write(chunk)
-                            f.close()
+                search_scope = ldap.SCOPE_SUBTREE
+                try:
+                    msgid = con.search(connect['path'][0].strip("/"), search_scope)
+                except:
+                    return 0
+                else:
+                    result_status, result_data = con.result(msgid, 0)
+                    if result_data[0][1]['javaCodeBase']:
+                        r = requests.get(result_data[0][1]['javaCodeBase'][0].decode('ascii').strip('/') + '/' +
+                                         result_data[0][1]['javaFactory'][0].decode('ascii') + '.class',
+                                         stream=True
+                                         )
+                        if r.status_code == 200:
+                            with open(
+                                    'payloads/' + str(connect['ip'][0]) + '_' + result_data[0][1]['javaFactory'][0].decode(
+                                        'ascii') + '.class', 'wb') as f:
+                                for chunk in r:
+                                    f.write(chunk)
+                                f.close()
 
 
 def check_geoip_mapping(es, index):
