@@ -38,9 +38,9 @@ app = Flask(__name__, template_folder='templates')
 
 @app.route("/", methods=['POST', 'GET', 'PUT', 'DELETE'])
 def homepage():
+    exploited = False
     regex = re.compile(r'^\${*')
     for var in request.args:
-        pprint.pprint(request.args.get(var))
         if re.search(regex, str(request.args.get(var))):
             getPayload(request.args.get(var))
             exploited = True
@@ -55,12 +55,12 @@ def homepage():
             if re.search(regex, str(value)):
                 payload = getPayload(value)
                 exploited = True
-        if 'exploited' in locals():
+        if exploited:
             reportHit(request)
         return (
             "<html><head><title>Login Failed</title></head><body><h1>Login Failed</h1><br/><a href='/'>Try again</a></body></html>")
     else:
-        if 'exploited' in locals():
+        if exploited:
             reportHit(request)
         return render_template('index.html')
 
