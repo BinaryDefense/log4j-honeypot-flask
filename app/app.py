@@ -122,10 +122,9 @@ def reportHit(request):
         check_geoip_mapping(es, config['ELASTICSEARCH']['index'])
         check_geoip_pipeline(es, config['ELASTICSEARCH']['pipeline'])
         report = {}
-        for header in request.headers:
-            report[header] = str(header[1])
-        for fieldname, value in request.form.items():
-            report[fieldname] = str(value)
+        report['headers'] = request.headers
+        if request.form.items():
+            report['fielditems'] = request.form.items()
         report['src_ip'] = request.remote_addr
         report['sensor'] = config['DEFAULT']['name']
 
