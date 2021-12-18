@@ -171,4 +171,4 @@ def homepage():
 
 if __name__ == '__main__':
     config = read_conf()
-    app.run(debug=True, host=config['DEFAULT']['ip'], port=int(config['DEFAULT']['port']))
+    app.run(debug=False, host=config['DEFAULT']['ip'], port=int(config['DEFAULT']['port']))
