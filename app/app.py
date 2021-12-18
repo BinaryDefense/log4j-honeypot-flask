@@ -20,7 +20,6 @@ def read_conf():
 
 
 def getPayload(request):
-    pprint.pprint(request)
     regex = re.compile(
         r'(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|).*})'
     )
@@ -56,13 +55,15 @@ def homepage():
             if re.search(regex, str(value)):
                 payload = getPayload(value)
                 exploited = True
+        if exploited:
+            reportHit(request)
         return (
             "<html><head><title>Login Failed</title></head><body><h1>Login Failed</h1><br/><a href='/'>Try again</a></body></html>")
     else:
+        if exploited:
+            reportHit(request)
         return render_template('index.html')
 
-    if exploited:
-        reportHit(request)
 
 
 if __name__ == '__main__':
