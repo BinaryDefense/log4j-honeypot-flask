@@ -10,7 +10,7 @@ import configparser
 import ldap
 import socket
 from typing import Any
-import datetime
+from datetime import datetime
 
 def read_conf():
     config = configparser.ConfigParser()
