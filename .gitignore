@@ -154,3 +154,5 @@ venv/
 .venv/
 songs/
 dist/
+payloads/
+config.ini

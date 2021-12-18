@@ -25,7 +25,9 @@ def getPayload(request):
     )
     m = re.match(regex, str(request))
     if m:
-        pprint.pprint(m.group(0))
+        ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', m.group(0))
+        pprint.pprint(ip)
+        pprint.pprint(re.match(r':[0-9]{1,5}', str(request)))
 
 
 def reportHit(request):
