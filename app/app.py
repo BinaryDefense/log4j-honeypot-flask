@@ -5,10 +5,11 @@ import requests
 import json
 import os
 import re
-import elasticsearch
+from elasticsearch import Elasticsearch, NotFoundError
 import configparser
 import ldap
 import socket
+from typing import Any
 
 
 def read_conf():
@@ -25,11 +26,13 @@ def getPayload(request):
     )
     m = re.match(regex, str(request))
     if m:
-        s = re.sub(r'(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|))', '', m.group(0)).replace('://', '').replace('}', '')
+        s = re.sub(
+            r'(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|))',
+            '', m.group(0)).replace('://', '').replace('}', '')
         connect = {'ip': re.findall(r'[0-9]+(?:\.[0-9]+){3}', s),
                    'port': re.findall(r'(?::[0-9]{1,5}\/)', s),
                    'path': re.findall(r'(?:\/.{1,})', s)
-        }
+                   }
 
         try:
             con = ldap.initialize("ldap://" + connect['ip'][0] + connect['port'][0].replace('/', ''), bytes_mode=False)
@@ -48,20 +51,83 @@ def getPayload(request):
             else:
                 result_status, result_data = con.result(msgid, 0)
                 if result_data[0][1]['javaCodeBase']:
-                    r = requests.get(result_data[0][1]['javaCodeBase'][0].decode('ascii').strip('/') + '/' + result_data[0][1]['javaFactory'][0].decode('ascii') + '.class',
+                    r = requests.get(result_data[0][1]['javaCodeBase'][0].decode('ascii').strip('/') + '/' +
+                                     result_data[0][1]['javaFactory'][0].decode('ascii') + '.class',
                                      stream=True
-                    )
+                                     )
                     if r.status_code == 200:
-                        with open('payloads/' + str(connect['ip'][0]) + '_' + result_data[0][1]['javaFactory'][0].decode('ascii') + '.class', 'wb') as f:
+                        with open(
+                                'payloads/' + str(connect['ip'][0]) + '_' + result_data[0][1]['javaFactory'][0].decode(
+                                    'ascii') + '.class', 'wb') as f:
                             for chunk in r:
                                 f.write(chunk)
                             f.close()
 
 
+def check_geoip_mapping(es, index):
+    if es.indices.exists(index=index):
+        es.indices.put_mapping(
+            index=index,
+            body={
+                "properties": {
+                    "geo": {"properties": {"location": {"type": "geo_point"}}}
+                }
+            },
+        )
+
+
+def check_geoip_pipeline(es, pipeline):
+    try:
+        # check if the geoip pipeline exists. An error
+        # is raised if the pipeline does not exist
+        es.ingest.get_pipeline(id=pipeline)
+    except NotFoundError:
+        # geoip pipeline
+        body = {
+            "description": "Add geoip info",
+            "processors": [
+                {
+                    "geoip": {
+                        "field": "src_ip",  # input field of the pipeline (source address)
+                        "target_field": "geo",  # output field of the pipeline (geo data)
+                        "database_file": "GeoLite2-City.mmdb",
+                    }
+                }
+            ],
+        }
+        es.ingest.put_pipeline(id=pipeline, body=body)
+
+
+def check_index(es, index):
+    if not es.indices.exists(index=index):
+        #  create index
+        es.indices.create(index=index)
 
 
 def reportHit(request):
-    print('LOLZ!!')
+    config = read_conf()
+    if config['ELASTICSEARCH']['enabled'] == "true":
+        options: dict[str, Any] = {}
+        options["http_auth"] = (config['ELASTICSEARCH']['username'], config['ELASTICSEARCH']['password'])
+        options["scheme"] = "https"
+        options["use_ssl"] = True
+        options["ssl_show_warn"] = False
+        options["verify_certs"] = False
+        es = Elasticsearch(f"{config['ELASTICSEARCH']['host']}:{config['ELASTICSEARCH']['port']}", **options)
+        check_index(es, config['ELASTICSEARCH']['index'])
+        check_geoip_mapping(es, config['ELASTICSEARCH']['index'])
+        check_geoip_pipeline(es, config['ELASTICSEARCH']['pipeline'])
+        report = {}
+        for header in request.headers:
+            report[header] = str(header[1])
+        for fieldname, value in request.form.items():
+            report[fieldname] = str(value)
+        report['src_ip'] = request.remote_addr
+        report['sensor'] = config['DEFAULT']['name']
+
+        es.index(
+            index=config['ELASTICSEARCH']['index'], doc_type='_doc', body=report, pipeline=config['ELASTICSEARCH']['pipeline']
+        )
     return 0
 
 
@@ -95,7 +161,6 @@ def homepage():
         if exploited:
             reportHit(request)
         return render_template('index.html')
-
 
 
 if __name__ == '__main__':

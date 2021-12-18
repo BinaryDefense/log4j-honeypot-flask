@@ -1,11 +1,16 @@
 [DEFAULT]
 ip = 0.0.0.0
 port = 8080
+name = honeypot_1
 
 [ELASTICSEARCH]
-ip =
-username =
-password =
-ssl = true
-verify_ssl = true
+enabled = true
+host =
+port =
 index = log4shell
+username = elastic
+password =
+pipeline = geoip
+type = _doc
+ssl = true
+verify_certs = true
