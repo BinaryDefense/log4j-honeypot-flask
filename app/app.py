@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, request
-import requests
+import requests, urilib
 import json
 import os
 
@@ -49,7 +49,8 @@ def reportHit(request):
     msg = {'text':'\n '.join(msglines)}
     response = requests.post(
         webhook_url, data=json.dumps(msg),
-        headers={'Content-Type': 'application/json'}
+        headers={'Content-Type': 'application/json'},
+        proxies=urilib.request.getproxies(),
     )
     if response.status_code != 200:
         print('Request to webhook returned an error %s, the response is:\n%s' % (response.status_code, response.text))
