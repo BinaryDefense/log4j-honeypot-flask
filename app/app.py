@@ -30,10 +30,8 @@ def getPayload(request):
                    'port': re.findall(r'(?::[0-9]{1,5}\/)', s),
                    'path': re.findall(r'(?:\/.{1,})', s)
         }
-        pprint.pprint(connect)
 
         try:
-            print("ldap://" + connect['ip'][0] + connect['port'][0].replace('/', ''))
             con = ldap.initialize("ldap://" + connect['ip'][0] + connect['port'][0].replace('/', ''), bytes_mode=False)
         except:
             return 0
@@ -43,9 +41,13 @@ def getPayload(request):
             con.set_option(ldap.OPT_NETWORK_TIMEOUT, 5.0)
             con.simple_bind_s()
             search_scope = ldap.SCOPE_SUBTREE
-            msgid = con.search(connect['path'][0].strip("/"), search_scope)
-            result_status, result_data = con.result(msgid, 0)
-            pprint.pprint(result_data)
+            try:
+                msgid = con.search(connect['path'][0].strip("/"), search_scope)
+            except:
+                return 0
+            else:
+                result_status, result_data = con.result(msgid, 0)
+                pprint.pprint(result_data[1]['javaCodeBase'])
 
 
 
