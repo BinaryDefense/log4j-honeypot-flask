@@ -25,9 +25,11 @@ def getPayload(request):
     )
     m = re.match(regex, str(request))
     if m:
-        connect = {'ip': re.findall(r'[0-9]+(?:\.[0-9]+){3}', m.group(0)),
-                   'port': re.findall(r'(?::[0-9]{1,5}\/)', m.group(0)),
-                   'path': re.findall(r'(?:\/[.]{1,})', m.group(0))
+        sub = re.sub(r'(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|)}:\/\/)', '', m.group(0))
+        pprint.pprint(sub)
+        connect = {'ip': re.findall(r'[0-9]+(?:\.[0-9]+){3}', sub),
+                   'port': re.findall(r'(?::[0-9]{1,5}\/)', sub),
+                   'path': re.findall(r'(?:\/[.]{1,})', sub)
         }
         pprint.pprint(connect)
 
