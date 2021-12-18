@@ -20,11 +20,13 @@ def read_conf():
 
 
 def getPayload(request):
+    pprint.pprint(request)
     regex = re.compile(
         r'/(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|).*})/gm'
     )
-    m = re.match(regex, request)
-    pprint.pprint(m.group(0))
+    m = re.match(regex, str(request))
+    if m:
+        pprint.pprint(m.group(0))
 
 
 def reportHit(request):
@@ -40,7 +42,7 @@ def homepage():
     for header in request.headers:
         print(header)
         if re.search(regex, str(header[1])):
-            getPayload(header)
+            getPayload(header[1])
             reportHit(header)
     if request.method == 'POST':
         for fieldname, value in request.form.items():
