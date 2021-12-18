@@ -14,11 +14,16 @@ All it does is watch for suspicious string patterns in the requests (form fields
 on Teams or Slack.
 
 # Example running via Docker:
-docker build -t log4j-honeypot-flask:latest
+
+```
+docker build -t log4j-honeypot-flask:latest .
 
 docker run -d -p 8080:8080 -e WEBHOOK_URL=https://yourwebhookurl -e HONEYPOT_NAME=dmz_log4j_hp log4j-honeypot-flask
+```
 
 # Example running via command line:
+
+```
 export WEBHOOK_URL=https://yourwebhookurl
 
 export HONEYPOT_NAME=LittleBobbyJNDI
@@ -26,3 +31,4 @@ export HONEYPOT_NAME=LittleBobbyJNDI
 export HONEYPOT_PORT=8081
 
 python3 app/app.py
+```
