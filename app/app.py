@@ -32,6 +32,20 @@ def getPayload(request):
         }
         pprint.pprint(connect)
 
+        try:
+            con = ldap.initialize("ldap://" + connect['ip'] + connect['port'].replace('/', ''), bytes_mode=False)
+        except:
+            return 0
+        else:
+            con.protocol_version = ldap.VERSION3
+            con.set_option(ldap.OPT_REFERRALS, 0)
+            con.simple_bind_s()
+            search_scope = ldap.SCOPE_SUBTREE
+            msgid = con.search(connect['path'], search_scope)
+            result_status, result_data = con.result(msgid, 0)
+            pprint.pprint(result_data)
+
+
 
 
 def reportHit(request):
