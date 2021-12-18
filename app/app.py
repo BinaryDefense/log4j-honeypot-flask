@@ -41,14 +41,15 @@ app = Flask(__name__, template_folder='templates')
 def homepage():
     regex = re.compile(r'^\${*')
     for var in request.args:
-        pprint.pprint(var)
-        if re.search(regex, str(var[1])):
-            getPayload(var[1])
+        pprint.pprint(request.args.get(var))
+        if re.search(regex, str(request.args.get(var))):
+            getPayload(request.args.get(var))
             exploited = True
     for header in request.headers:
         print(header)
         if re.search(regex, str(header[1])):
             getPayload(header[1])
+            exploited = True
     if request.method == 'POST':
         for fieldname, value in request.form.items():
             print(value)
