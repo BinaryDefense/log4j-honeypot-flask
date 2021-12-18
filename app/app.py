@@ -41,7 +41,7 @@ app = Flask(__name__, template_folder='templates')
 def homepage():
     regex = re.compile(r'^\${*')
     for var in request.args:
-        print(var)
+        pprint.pprint(var)
         if re.search(regex, str(var[1])):
             getPayload(var[1])
             exploited = True
@@ -60,7 +60,7 @@ def homepage():
     else:
         return render_template('index.html')
 
-    if exploited is True:
+    if exploited:
         reportHit(request)
 
 
