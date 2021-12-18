@@ -10,7 +10,7 @@ import configparser
 import ldap
 import socket
 from typing import Any
-
+import datetime
 
 def read_conf():
     config = configparser.ConfigParser()
@@ -128,6 +128,7 @@ def reportHit(request):
             for fieldname, value in request.form.items():
                 report[fieldname] = report[value]
         report['src_ip'] = request.remote_addr
+        report['timestamp'] = datetime.now().isoformat()
         report['sensor'] = config['DEFAULT']['name']
 
         es.index(
