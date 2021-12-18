@@ -131,7 +131,7 @@ def reportHit(request):
         report['sensor'] = config['DEFAULT']['name']
 
         es.index(
-            index=config['ELASTICSEARCH']['index'], doc_type='_doc', body=report, pipeline=config['ELASTICSEARCH']['pipeline']
+            index=config['ELASTICSEARCH']['index'], doc_type='_doc', document=report, pipeline=config['ELASTICSEARCH']['pipeline']
         )
     return 0
 
