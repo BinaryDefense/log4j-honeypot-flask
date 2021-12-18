@@ -23,7 +23,7 @@ def getPayload(request):
     regex = re.compile(
         r'/(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|).*})/gm'
     )
-    m = re.match(regex, request)
+    m = re.match(regex, str(request))
     pprint.pprint(m.group(0))
 
 
@@ -40,7 +40,7 @@ def homepage():
     for header in request.headers:
         print(header)
         if re.search(regex, str(header[1])):
-            getPayload(header)
+            getPayload(header[1])
             reportHit(header)
     if request.method == 'POST':
         for fieldname, value in request.form.items():
