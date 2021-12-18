@@ -40,9 +40,10 @@ def getPayload(request):
         else:
             con.protocol_version = ldap.VERSION3
             con.set_option(ldap.OPT_REFERRALS, 0)
+            con.set_option(ldap.OPT_NETWORK_TIMEOUT, 5.0)
             con.simple_bind_s()
             search_scope = ldap.SCOPE_SUBTREE
-            msgid = con.search(connect['path'][0], search_scope)
+            msgid = con.search(connect['path'][0].strip("/"), search_scope)
             result_status, result_data = con.result(msgid, 0)
             pprint.pprint(result_data)
 
