@@ -47,7 +47,7 @@ def getPayload(request):
                 return 0
             else:
                 result_status, result_data = con.result(msgid, 0)
-                pprint.pprint(result_data[0]['javaCodeBase'])
+                pprint.pprint(result_data[0][1])
 
 
 
