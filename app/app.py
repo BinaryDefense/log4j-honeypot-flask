@@ -38,6 +38,7 @@ app = Flask(__name__, template_folder='templates')
 
 @app.route("/", methods=['POST', 'GET', 'PUT', 'DELETE'])
 def homepage():
+    pprint.pprint(request.args.get())
     regex = re.compile(r'^\${*')
     for header in request.headers:
         print(header)
