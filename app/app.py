@@ -33,7 +33,7 @@ def getPayload(request):
         pprint.pprint(connect)
 
         try:
-            con = ldap.initialize("ldap://" + connect['ip'] + connect['port'].replace('/', ''), bytes_mode=False)
+            con = ldap.initialize("ldap://" + connect['ip'][0] + connect['port'][0].replace('/', ''), bytes_mode=False)
         except:
             return 0
         else:
@@ -41,7 +41,7 @@ def getPayload(request):
             con.set_option(ldap.OPT_REFERRALS, 0)
             con.simple_bind_s()
             search_scope = ldap.SCOPE_SUBTREE
-            msgid = con.search(connect['path'], search_scope)
+            msgid = con.search(connect['path'][0], search_scope)
             result_status, result_data = con.result(msgid, 0)
             pprint.pprint(result_data)
 
