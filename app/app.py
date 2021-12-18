@@ -22,7 +22,7 @@ def read_conf():
 def getPayload(request):
     pprint.pprint(request)
     regex = re.compile(
-        r'/(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|).*})/gm'
+        r'(?:\${(j|\${::-j})(n|\${::-n})(d|\${::-d})(i|\${::-i}):((l|\${::-l})(d|\${::-d})(a|\${::-a})(p|\${::-p})|).*})'
     )
     m = re.match(regex, str(request))
     if m:
