@@ -27,7 +27,7 @@ def getPayload(request):
     if m:
         ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', m.group(0))
         port = re.findall(r'(?:[0-9]{1,5})', m.group(0))
-        path = re.findall(r'(?\/[.]{1,})', m.group(0))
+        path = re.findall(r'(?:\/[.]{1,})', m.group(0))
         pprint.pprint(ip, port, path)
 
 
