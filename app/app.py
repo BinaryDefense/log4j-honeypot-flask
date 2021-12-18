@@ -26,8 +26,10 @@ def getPayload(request):
     m = re.match(regex, str(request))
     if m:
         ip = re.findall(r'[0-9]+(?:\.[0-9]+){3}', m.group(0))
-        pprint.pprint(ip)
-        pprint.pprint(re.match(r':[0-9]{1,5}', str(request)))
+        port = re.findall(r'(?:[0-9]{1,5})', m.group(0))
+        path = re.findall(r'(?\/[.]{1,})', m.group(0))
+        pprint.pprint(ip, port, path)
+
 
 
 def reportHit(request):
