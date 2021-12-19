@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, request
-import requests, urilib
+import requests, urllib.request
 import json
 import os
 
@@ -50,7 +50,7 @@ def reportHit(request):
     response = requests.post(
         webhook_url, data=json.dumps(msg),
         headers={'Content-Type': 'application/json'},
-        proxies=urilib.request.getproxies(),
+        proxies=urllib.request.getproxies(),
     )
     if response.status_code != 200:
         print('Request to webhook returned an error %s, the response is:\n%s' % (response.status_code, response.text))
@@ -85,4 +85,8 @@ def homepage(hostname="NA"):
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=honeypot_port)
+    if not webhook_url:
+        print("ERROR: WEBHOOK_URL environment variable not set! I will not be able to report exploit attempts!")
+        print("For Docker, use -e WEBHOOK_URL=xxxxx or for shell use export WEBHOOK_URL=xxxxx")
+    else:
+        app.run(debug=False, host='0.0.0.0', port=honeypot_port)
