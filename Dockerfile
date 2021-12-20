@@ -1,4 +1,4 @@
-FROM python:slim
+FROM docker.io/library/python:slim
 
 MAINTAINER Randy Pargman "randy.pargman@binarydefense.com"
 
